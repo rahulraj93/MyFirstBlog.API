@@ -43,11 +43,16 @@ namespace CodePulse.API.Controllers
             return Ok(response);
         }
 
-        //GET : /api/categories
+        //GET : /api/categories?query=html&sortBy=name&sortDirection=desc
         [HttpGet]
-        public async Task<IActionResult> GetAllCategories()
+        public async Task<IActionResult> GetAllCategories([FromQuery] string? query, 
+                                                            [FromQuery] string? sortBy,
+                                                            [FromQuery] string? sortDirection,
+                                                            [FromQuery] int? pageNumber,
+                                                            [FromQuery] int? pageSize)
         {
-            var categories = await categoryRepository.GetAllAsync();
+            var categories = await categoryRepository.GetAllAsync(query, sortBy, sortDirection, pageNumber, pageSize);
+
             //Map Domain to DTO
             var response = new List<CategoryDto>();
             foreach(var category in categories)
@@ -138,6 +143,16 @@ namespace CodePulse.API.Controllers
             };
             return Ok(response);
 
+        }
+
+        //GET
+        [HttpGet]
+        [Route("count")]
+        public async Task<IActionResult> GetCategoriesTotal()
+        {
+            var count = await categoryRepository.GetCount();
+
+            return Ok(count);
         }
     }
 }
